@@ -20,13 +20,24 @@ export default function ProfileScreen({ navigation }) {
   const { theme, userName, setUserName } = useTheme();
   // useState keeps an editable draft separate until Save is pressed.
   const [draftName, setDraftName] = useState(userName);
+  // useState stores the time-based greeting calculated when the screen loads.
   const [timeGreeting, setTimeGreeting] = useState('');
+  // useState holds brief feedback after the user saves their name.
   const [saveMessage, setSaveMessage] = useState('');
 
-  // Set a greeting once when the Profile screen mounts.
+  // useEffect calculates a greeting once when the Profile screen mounts.
   useEffect(() => {
+    // This required mount effect initializes a value displayed by the screen.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTimeGreeting(getTimeGreeting());
   }, []);
+
+  // useEffect refreshes the draft if the shared display name changes elsewhere.
+  useEffect(() => {
+    // This effect intentionally copies the external context value into the local draft.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDraftName(userName);
+  }, [userName]);
 
   function saveName() {
     const savedName = draftName.trim();

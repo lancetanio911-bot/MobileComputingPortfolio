@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
 
+// ScreenContainer applies themed safe-area, scroll, and centered-width layout.
 export default function ScreenContainer({ children, contentContainerStyle }) {
   const { theme } = useTheme();
 

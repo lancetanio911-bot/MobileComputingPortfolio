@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 
+// MenuCard renders a themed, reusable navigation card from its content props.
 export default function MenuCard({ icon, title, description, onPress, accent, cardWidth }) {
   const { theme } = useTheme();
 

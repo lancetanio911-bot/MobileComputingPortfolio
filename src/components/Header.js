@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import CustomButton from './CustomButton';
 import { useTheme } from '../context/ThemeContext';
 
+// Header shares screen titles and themed navigation controls across screens.
 export default function Header({ title, navigation, showBack = false, showSettings = false }) {
   const { theme } = useTheme();
 

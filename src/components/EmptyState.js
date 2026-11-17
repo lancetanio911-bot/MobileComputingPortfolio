@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 
+// EmptyState presents consistent themed messaging when a section has no items.
 export default function EmptyState({ title, description, icon = '✦' }) {
   const { theme } = useTheme();
 

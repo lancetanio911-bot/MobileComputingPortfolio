@@ -14,11 +14,15 @@ const STORAGE_KEY = '@mobile-computing-portfolio/theme';
 const USER_NAME_STORAGE_KEY = '@mobile-computing-portfolio/user-name';
 const ThemeContext = createContext(null);
 
+// ThemeProvider shares and persists display preferences for the whole app.
 export function ThemeProvider({ children }) {
-  // useState holds shared preferences until the screens change them.
+  // useState stores the global appearance preference.
   const [mode, setMode] = useState('light');
+  // useState stores the global display name shared by the screens.
   const [userName, setUserName] = useState('');
+  // useState prevents the app from rendering before saved preferences load.
   const [isReady, setIsReady] = useState(false);
+  // useState exposes storage problems so the Settings screen can report them.
   const [storageError, setStorageError] = useState('');
   const saveQueue = useRef(Promise.resolve());
 
@@ -34,6 +38,7 @@ export function ThemeProvider({ children }) {
     setUserName(nextUserName);
   }, []);
 
+  // useEffect loads the saved theme and display name when the provider mounts.
   useEffect(() => {
     let isMounted = true;
 
@@ -81,6 +86,7 @@ export function ThemeProvider({ children }) {
     };
   }, []);
 
+  // useEffect persists global preference changes after loading completes.
   useEffect(() => {
     if (!isReady) {
       return;
@@ -101,7 +107,7 @@ export function ThemeProvider({ children }) {
         if (isMounted) {
           setStorageError('');
         }
-      } catch (error) {
+      } catch {
         if (isMounted) {
           setStorageError('Your preferences changed, but could not be saved for the next launch.');
         }
@@ -133,6 +139,7 @@ export function ThemeProvider({ children }) {
   );
 }
 
+// useTheme is the shared context hook screens use to read global preferences.
 export function useTheme() {
   // useContext lets each screen read and update the same provider value.
   const context = useContext(ThemeContext);

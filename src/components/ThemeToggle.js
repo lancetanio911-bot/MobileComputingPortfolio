@@ -6,6 +6,7 @@ const modes = [
   { value: 'dark', label: 'Dark Mode' },
 ];
 
+// ThemeToggle presents reusable theme choices backed by the global context.
 export default function ThemeToggle({ onModeChange }) {
   const { mode, setThemeMode, theme } = useTheme();
 

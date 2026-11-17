@@ -8,7 +8,7 @@ import appConfig from '../../app.json';
 
 export default function SettingsScreen({ navigation }) {
   const { theme, storageError, userName, setUserName } = useTheme();
-  // This local message confirms the selected appearance option.
+  // useState holds brief local feedback after an appearance option is selected.
   const [themeMessage, setThemeMessage] = useState('');
   const appVersion = appConfig.expo.version;
 

@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 
+// CustomButton provides a reusable themed press target with optional styles.
 export default function CustomButton({
   label,
   onPress,
