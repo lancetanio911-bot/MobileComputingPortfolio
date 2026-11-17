@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 import Header from '../components/Header';
 import ScreenContainer from '../components/ScreenContainer';
@@ -7,13 +7,46 @@ import { useTheme } from '../context/ThemeContext';
 import appConfig from '../../app.json';
 
 export default function SettingsScreen({ navigation }) {
-  const { theme, storageError } = useTheme();
+  const { theme, storageError, userName, setUserName } = useTheme();
+  // This local message confirms the selected appearance option.
   const [themeMessage, setThemeMessage] = useState('');
   const appVersion = appConfig.expo.version;
 
   return (
     <ScreenContainer>
       <Header title="Settings" navigation={navigation} showBack />
+
+      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Profile</Text>
+      <View
+        style={[
+          styles.panel,
+          { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+        ]}
+      >
+        <Text style={[styles.panelDescription, { color: theme.colors.muted }]}>
+          Your display name appears in the Home greeting and on your Profile screen.
+        </Text>
+        <Text style={[styles.inputLabel, { color: theme.colors.text }]}>Display Name</Text>
+        <TextInput
+          accessibilityLabel="Display Name"
+          value={userName}
+          onChangeText={setUserName}
+          placeholder="Enter your name"
+          placeholderTextColor={theme.colors.muted}
+          autoCapitalize="words"
+          autoCorrect={false}
+          maxLength={40}
+          returnKeyType="done"
+          style={[
+            styles.nameInput,
+            {
+              color: theme.colors.text,
+              backgroundColor: theme.colors.background,
+              borderColor: theme.colors.border,
+            },
+          ]}
+        />
+      </View>
 
       <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Appearance</Text>
       <View
@@ -89,6 +122,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     marginBottom: 12,
+  },
+  inputLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  nameInput: {
+    minHeight: 48,
+    borderWidth: 1,
+    borderRadius: 13,
+    paddingHorizontal: 14,
+    fontSize: 14,
   },
   themeMessage: {
     fontSize: 12,

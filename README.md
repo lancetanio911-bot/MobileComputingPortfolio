@@ -1,63 +1,74 @@
 # Mobile Computing Portfolio
 
-A React Native Expo foundation for a Mobile Computing master compilation. It currently contains only the Home Dashboard and Settings Screen; future laboratory activities should be added after the instructor provides their actual instructions.
+A React Native Expo master-compilation app for a Mobile Computing course. Quick Access provides Profile and About screens. The activities section remains empty until the instructor assigns actual laboratory activities.
 
-## Run on Android with Expo Go
+## Run the app
 
 From the project directory:
 
 ```powershell
+npm install
 npx expo start
 ```
 
-Install **Expo Go** from Google Play on the Android phone, connect the phone and computer to the same Wi-Fi network, then scan the QR code shown by Expo. Keep the terminal running while testing. If local Wi-Fi discovery is blocked, start Expo with:
+Scan the Expo QR code with Expo Go on Android. To run in a web browser, press `w` in the Expo terminal or run `npx expo start --web`.
 
-```powershell
-npx expo start --tunnel
-```
-
-## Project structure
+## Folder structure
 
 ```text
 App.js
 src/
   components/
     CustomButton.js
+    EmptyState.js
     Header.js
+    MenuCard.js
     ScreenContainer.js
     ThemeToggle.js
   constants/
     theme.js
   context/
     ThemeContext.js
+  data/
+    activities.js
+    quickAccessItems.js
   navigation/
     AppNavigator.js
   screens/
+    AboutScreen.js
     HomeScreen.js
+    ProfileScreen.js
     SettingsScreen.js
 ```
 
-## How it works
+## Features and instructor rubric
 
-- `App.js` provides the global theme, waits until the saved preference has loaded, and gives React Navigation colors matching the selected theme.
-- `src/navigation/AppNavigator.js` makes Home the root screen and registers only Home and Settings.
-- `src/context/ThemeContext.js` uses `useState` for the shared theme, `useEffect` to load and save it with AsyncStorage, and `useContext` through `useTheme` so every screen reads and changes the same value.
-- `src/constants/theme.js` defines the light and dark color palettes.
-- `src/components/ScreenContainer.js` provides safe-area spacing and a `ScrollView` so content can scroll on smaller devices.
-- `src/components/Header.js` displays the screen title, the accessible Settings gear on Home, or a guarded Back button on Settings.
-- `src/components/CustomButton.js` is the reusable accessible button used by the header.
-- `src/components/ThemeToggle.js` shows Light Mode and Dark Mode choices and updates the global theme.
-- `src/screens/HomeScreen.js` shows the welcome message and the empty activities state. It contains no student profile or activity cards.
-- `src/screens/SettingsScreen.js` contains Appearance and Application Information only.
+- **Multi-screen navigation:** Home is the responsive dashboard. Quick Access cards open Profile and About; Home also links to Settings.
+- **Reusable components and hooks:** `MenuCard` is shared by quick links and future activities, and `CustomButton` is reused for profile saving. The Profile screen uses `useState` for its editable draft and `useEffect` to set a time-based greeting.
+- **Responsive Flexbox layout:** Screens use `View`, `ScrollView`, and Flexbox. `useWindowDimensions` controls one-column cards on narrow screens and two columns on wider screens. `ScreenContainer` centers content with a maximum width.
+- **Global state:** `ThemeContext` shares the current theme and display name. Settings updates the display name globally, and theme changes update all screens immediately. AsyncStorage persists both preferences.
+- **No invented labs:** `src/data/activities.js` starts as an empty array, so Home keeps showing “No activities added yet” and the supporting text.
 
-## Test the foundation
+## How to add a new activity
 
-1. Run `npx expo start` and open the project in Expo Go.
-2. Confirm Home shows the My Portfolio header, Settings gear, welcome copy, and empty activities message only.
-3. Tap the gear to open Settings.
-4. Use the Back button or Android back gesture/button; both should return to Home without an unhandled navigation error.
-5. Select Light Mode and Dark Mode and confirm the screen colors change immediately.
-6. Close and reopen the app to confirm the saved theme is restored.
-7. Scroll on a smaller screen and verify the content remains accessible.
+Only add an activity after its actual assignment is provided:
 
-The theme selections share global state while the empty Home screen intentionally has no activity interactions yet. Add laboratory screens only when their actual assignment requirements are available.
+1. Implement its screen in `src/screens/`.
+2. Register a matching route in `src/navigation/AppNavigator.js`.
+3. Add an entry to the `activities` array in `src/data/activities.js`, using the route name, title, description, icon, and one existing theme accent key (such as `sage`, `blue`, `rose`, or `primarySoft`).
+
+Home renders configured activities with the reusable `MenuCard`. Leave the array empty until an activity is assigned.
+
+## Screen-recording demo
+
+1. Start on Home and show Quick Access, the empty Activities message, and the Settings icon.
+2. Open Profile, edit the name, and press Save. Go back to show the Home greeting update.
+3. Reopen Profile and show the time-based greeting and saved name.
+4. Open Settings, edit Display Name, and toggle Light/Dark Mode. Show the updates immediately on Home and Profile.
+5. Open About and show the app description, version, and partner placeholders.
+6. Resize the web browser from a narrow phone layout to a wider desktop layout to show responsive cards and centered content.
+
+## Pair members
+
+- Partner 1: ______________________________
+- Partner 2: ______________________________

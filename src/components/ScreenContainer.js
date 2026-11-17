@@ -12,7 +12,7 @@ export default function ScreenContainer({ children, contentContainerStyle }) {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View>{children}</View>
+        <View style={styles.inner}>{children}</View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -24,8 +24,14 @@ const styles = StyleSheet.create({
   },
   content: {
     flexGrow: 1,
+    width: '100%',
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 32,
+  },
+  inner: {
+    width: '100%',
+    maxWidth: 960,
+    alignSelf: 'center',
   },
 });

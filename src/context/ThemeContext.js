@@ -11,13 +11,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { darkTheme, lightTheme } from '../constants/theme';
 
 const STORAGE_KEY = '@mobile-computing-portfolio/theme';
+const USER_NAME_STORAGE_KEY = '@mobile-computing-portfolio/user-name';
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
+  // useState holds shared preferences until the screens change them.
   const [mode, setMode] = useState('light');
+  const [userName, setUserName] = useState('');
   const [isReady, setIsReady] = useState(false);
   const [storageError, setStorageError] = useState('');
   const saveQueue = useRef(Promise.resolve());
+
   const setThemeMode = useCallback((nextMode) => {
     if (nextMode !== 'light' && nextMode !== 'dark') {
       throw new Error('Theme mode must be either "light" or "dark".');
@@ -26,18 +30,43 @@ export function ThemeProvider({ children }) {
     setMode(nextMode);
   }, []);
 
+  const updateUserName = useCallback((nextUserName) => {
+    setUserName(nextUserName);
+  }, []);
+
   useEffect(() => {
     let isMounted = true;
 
-    async function loadTheme() {
+    async function loadPreferences() {
       try {
-        const savedMode = await AsyncStorage.getItem(STORAGE_KEY);
-        if (isMounted && (savedMode === 'light' || savedMode === 'dark')) {
-          setMode(savedMode);
+        const results = await Promise.allSettled([
+          AsyncStorage.getItem(STORAGE_KEY),
+          AsyncStorage.getItem(USER_NAME_STORAGE_KEY),
+        ]);
+
+        if (!isMounted) {
+          return;
         }
-      } catch (error) {
-        if (isMounted) {
-          setStorageError('Your saved theme could not be loaded. The app will use Light Mode.');
+
+        const [savedModeResult, savedNameResult] = results;
+        const loadErrors = [];
+
+        if (savedModeResult.status === 'fulfilled') {
+          if (savedModeResult.value === 'light' || savedModeResult.value === 'dark') {
+            setMode(savedModeResult.value);
+          }
+        } else {
+          loadErrors.push('Your saved theme could not be loaded.');
+        }
+
+        if (savedNameResult.status === 'fulfilled') {
+          setUserName(savedNameResult.value || '');
+        } else {
+          loadErrors.push('Your saved display name could not be loaded.');
+        }
+
+        if (loadErrors.length > 0) {
+          setStorageError(loadErrors.join(' '));
         }
       } finally {
         if (isMounted) {
@@ -46,7 +75,7 @@ export function ThemeProvider({ children }) {
       }
     }
 
-    loadTheme();
+    loadPreferences();
     return () => {
       isMounted = false;
     };
@@ -59,11 +88,14 @@ export function ThemeProvider({ children }) {
 
     let isMounted = true;
 
-    async function saveTheme() {
+    async function savePreferences() {
       try {
         const saveRequest = saveQueue.current
           .catch(() => undefined)
-          .then(() => AsyncStorage.setItem(STORAGE_KEY, mode));
+          .then(() => AsyncStorage.multiSet([
+            [STORAGE_KEY, mode],
+            [USER_NAME_STORAGE_KEY, userName],
+          ]));
         saveQueue.current = saveRequest;
         await saveRequest;
         if (isMounted) {
@@ -71,25 +103,28 @@ export function ThemeProvider({ children }) {
         }
       } catch (error) {
         if (isMounted) {
-          setStorageError('Your theme changed, but could not be saved for the next launch.');
+          setStorageError('Your preferences changed, but could not be saved for the next launch.');
         }
       }
     }
 
-    saveTheme();
+    savePreferences();
     return () => {
       isMounted = false;
     };
-  }, [isReady, mode]);
+  }, [isReady, mode, userName]);
 
+  // Context shares theme and profile preferences so every screen updates immediately.
   const value = useMemo(() => ({
     mode,
     isDark: mode === 'dark',
     theme: mode === 'dark' ? darkTheme : lightTheme,
+    userName,
     storageError,
     isReady,
     setThemeMode,
-  }), [isReady, mode, storageError, setThemeMode]);
+    setUserName: updateUserName,
+  }), [isReady, mode, storageError, setThemeMode, updateUserName, userName]);
 
   return (
     <ThemeContext.Provider value={value}>
@@ -99,6 +134,7 @@ export function ThemeProvider({ children }) {
 }
 
 export function useTheme() {
+  // useContext lets each screen read and update the same provider value.
   const context = useContext(ThemeContext);
   if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider.');
